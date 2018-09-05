@@ -1,5 +1,8 @@
 package cc.pusch.checkproxyaccess;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,4 +27,20 @@ class Results {
         resmap.put(url, null);
     }
 
+    void printOutfile(String outFile) {
+        try {
+            BufferedWriter out = new BufferedWriter(new FileWriter(outFile));
+            for (URL url : resmap.keySet()) {
+                out.write(url.toString() + ";");
+                for (int retcode : resmap.get(url)) {
+                    out.write(Integer.toString(retcode) + ";");
+                }
+                out.write("\n");
+            }
+            out.close();
+        } catch (IOException ex) {
+            System.out.println("Writing output file " + outFile + "failed");
+        }
+
+    }
 }

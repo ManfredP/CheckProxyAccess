@@ -49,6 +49,7 @@ class CheckProxyAccess {
             } catch (InterruptedException ignored) {
             }
         }
+        results.printOutfile(config.getOutFile());
     }
 
     private static void startCheckThread(URL url2Check, Thread[] tPool, Config config, Results results) {

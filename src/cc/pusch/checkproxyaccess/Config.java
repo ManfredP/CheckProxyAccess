@@ -12,9 +12,11 @@ import static java.net.Proxy.Type.SOCKS;
 class Config {
     private final Proxy[] proxies;
     private String inFile;
+    private String outFile;
     private int numThreads;
 
     Config(String[] args) {
+        numThreads = 1;
         int numOfProxies = 0;
         for (String arg : args) {
             if (arg.equals("-p")) {
@@ -28,6 +30,9 @@ class Config {
                 i++;
             } else if (args[i].equals("-i")) {
                 setInfile(args[i + 1]);
+                i++;
+            } else if (args[i].equals("-o")) {
+                setOutFile(args[i + 1]);
                 i++;
             } else if (args[i].equals("-t")) {
                 setNumThreads(Integer.parseInt(args[i + 1]));
@@ -78,6 +83,10 @@ class Config {
         this.inFile = infile;
     }
 
+    private void setOutFile(String outFile) {
+        this.outFile = outFile;
+    }
+
     private void setNumThreads(int numThreads) {
         this.numThreads = numThreads;
     }
@@ -88,6 +97,10 @@ class Config {
 
     String getInfile() {
         return inFile;
+    }
+
+    String getOutFile() {
+        return outFile;
     }
 
     int getNumThreads() {
