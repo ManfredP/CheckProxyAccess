@@ -61,7 +61,7 @@ class CheckProxyAccess {
         HttpsURLConnection.setDefaultHostnameVerifier(noHostnameVerify);
         Config config = new Config(args);
         Thread[] tPool = new Thread[config.getNumThreads()];
-        Results results = new Results();
+        Results results = new Results(config.getConsoleOutput());
         try {
             BufferedReader urlsFile = new BufferedReader(new FileReader(config.getInfile()));
             while ((hostPort2Check = urlsFile.readLine()) != null) {
@@ -84,7 +84,9 @@ class CheckProxyAccess {
             } catch (InterruptedException ignored) {
             }
         }
-        results.printOutfile(config.getOutFile());
+        if (config.getOutFile() != null) {
+            results.printOutfile(config.getOutFile());
+        }
     }
 
     private static void startCheckThread(URL url2Check, Thread[] tPool, Config config, Results results) {

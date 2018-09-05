@@ -13,10 +13,12 @@ class Config {
     private final Proxy[] proxies;
     private String inFile;
     private String outFile;
+    private boolean consoleOutput;
     private int numThreads;
 
     Config(String[] args) {
         numThreads = 1;
+        consoleOutput = false;
         int numOfProxies = 0;
         for (String arg : args) {
             if (arg.equals("-p")) {
@@ -25,19 +27,66 @@ class Config {
         }
         proxies = new Proxy[numOfProxies];
         for (int i = 0; i < args.length; i++) {
-            if (args[i].equals("-p")) {
-                createProxy(args[i + 1]);
-                i++;
-            } else if (args[i].equals("-i")) {
-                setInfile(args[i + 1]);
-                i++;
-            } else if (args[i].equals("-o")) {
-                setOutFile(args[i + 1]);
-                i++;
-            } else if (args[i].equals("-t")) {
-                setNumThreads(Integer.parseInt(args[i + 1]));
-                i++;
+            switch (args[i]) {
+                case "-p":
+                    if (args.length > i + 1) {
+                        createProxy(args[i + 1]);
+                        i++;
+                    } else {
+                        System.out.println("Option -p requires an argument");
+                        System.exit(1);
+                    }
+                    break;
+                case "-i":
+                    if (args.length > i + 1) {
+                        setInfile(args[i + 1]);
+                        i++;
+                    } else {
+                        System.out.println("Option -i requires an argument");
+                        System.exit(1);
+                    }
+                    break;
+                case "-o":
+                    if (args.length > i + 1) {
+                        setOutFile(args[i + 1]);
+                        i++;
+                    } else {
+                        System.out.println("Option -o requires an argument");
+                        System.exit(1);
+                    }
+                    break;
+                case "-t":
+                    if (args.length > i + 1) {
+                        setNumThreads(Integer.parseInt(args[i + 1]));
+                        i++;
+                    } else {
+                        System.out.println("Option -t requires an argument");
+                        System.exit(1);
+                    }
+                    break;
+                case "-v":
+                    consoleOutput = true;
+                    break;
+                case "--help":
+                    printUsage();
+                    System.exit(0);
+                    break;
             }
+        }
+        if (numOfProxies < 1) {
+            System.out.println("You have to specify at least one proxy parameter");
+            System.exit(1);
+        }
+        if (numThreads < 1) {
+            System.out.println("You need at least one thread");
+            System.exit(1);
+        }
+        if (inFile == null || inFile.isEmpty()) {
+            System.out.println("Invalid input file");
+            System.exit(1);
+        }
+        if (outFile == null) {
+            consoleOutput = true;
         }
     }
 
@@ -91,6 +140,10 @@ class Config {
         this.numThreads = numThreads;
     }
 
+    private void printUsage() {
+        System.out.println("usage: checkproxyaccess -i infile -p proxy_or_DIRECT [-o outfile] [-t num_threads] [-v]");
+    }
+
     Proxy[] getProxyList() {
         return (proxies);
     }
@@ -105,5 +158,9 @@ class Config {
 
     int getNumThreads() {
         return numThreads;
+    }
+
+    boolean getConsoleOutput() {
+        return consoleOutput;
     }
 }
