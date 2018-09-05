@@ -1,11 +1,14 @@
 package cc.pusch.checkproxyaccess;
 
+import javax.net.ssl.*;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 
 class CheckProxyAccess {
     public static void main(String[] args) {
@@ -24,6 +27,38 @@ class CheckProxyAccess {
         }
         System.setProperty("java.net.useSystemProxies", "false");
         String hostPort2Check;
+        TrustManager[] trustAll = new TrustManager[]{
+                new X509TrustManager() {
+                    @Override
+                    public void checkClientTrusted(X509Certificate[] x509Certificates, String s) {
+
+                    }
+
+                    @Override
+                    public void checkServerTrusted(X509Certificate[] x509Certificates, String s) {
+
+                    }
+
+                    @Override
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+                }
+        };
+        try {
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAll, new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+        } catch (java.security.NoSuchAlgorithmException | java.security.KeyManagementException ex) {
+            System.out.println("Failed to install trustAll TrustManager");
+        }
+        HostnameVerifier noHostnameVerify = new HostnameVerifier() {
+            @Override
+            public boolean verify(String s, SSLSession sslSession) {
+                return true;
+            }
+        };
+        HttpsURLConnection.setDefaultHostnameVerifier(noHostnameVerify);
         Config config = new Config(args);
         Thread[] tPool = new Thread[config.getNumThreads()];
         Results results = new Results();
