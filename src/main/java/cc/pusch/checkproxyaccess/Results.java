@@ -18,17 +18,13 @@ class Results {
 
     synchronized void addResult(URL url, int[] result) {
         resmap.put(url, result);
-        if(printConsoleOutput) {
+        if (printConsoleOutput) {
             System.out.printf("%s;", url.toString());
             for (int aResult : result) {
                 System.out.printf("%s;", Integer.toString(aResult));
             }
             System.out.printf("\n");
         }
-    }
-
-    void addURL(URL url) {
-        resmap.put(url, null);
     }
 
     void printOutfile(String outFile) {

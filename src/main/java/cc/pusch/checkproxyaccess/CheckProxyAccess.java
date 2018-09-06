@@ -52,12 +52,8 @@ class CheckProxyAccess {
         } catch (java.security.NoSuchAlgorithmException | java.security.KeyManagementException ex) {
             System.out.println("Failed to install trustAll TrustManager");
         }
-        HostnameVerifier noHostnameVerify = new HostnameVerifier() {
-            @Override
-            public boolean verify(String s, SSLSession sslSession) {
-                return true;
-            }
-        };
+        HostnameVerifier noHostnameVerify =
+                (String s, SSLSession sslSession) -> true;
         HttpsURLConnection.setDefaultHostnameVerifier(noHostnameVerify);
         Config config = new Config(args);
         Thread[] tPool = new Thread[config.getNumThreads()];
@@ -84,9 +80,7 @@ class CheckProxyAccess {
             } catch (InterruptedException ignored) {
             }
         }
-        if (config.getOutFile() != null) {
-            results.printOutfile(config.getOutFile());
-        }
+        config.getOutFile().ifPresent(results::printOutfile);
     }
 
     private static void startCheckThread(URL url2Check, Thread[] tPool, Config config, Results results) {

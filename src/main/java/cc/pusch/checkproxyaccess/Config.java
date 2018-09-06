@@ -2,6 +2,7 @@ package cc.pusch.checkproxyaccess;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -152,8 +153,8 @@ class Config {
         return inFile;
     }
 
-    String getOutFile() {
-        return outFile;
+    Optional<String> getOutFile() {
+        return Optional.ofNullable(outFile);
     }
 
     int getNumThreads() {
