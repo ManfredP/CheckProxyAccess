@@ -21,13 +21,10 @@ java -jar checkproxyaccess-1.0.jar -i input_file -p proxy1 [-p proxy2, -p proxy3
 ```
 
 #### -i The input file
-First you need an input file with the targets to check. The entries have to be in the form `host[:port]` port defaults
-to 80, if port equals 443 an https request **without any SSL verification** is done, all other ports are tried with
-http. Comments are not supported at the moment. Here a short example:
-```
-www.github.com:443
-www.reddit.com
-```
+First you need an input file with the targets to check. The entries can be full URLs like
+`https://www.example.com/somepath/somedoc.html` or `host[:port]` combinations like `somehost.example.com`,
+`otherhost.example.com:8080`. If you don't specify a protocol we treat everything as http except connections to port 443
+and port 8443 these will be treated as https connections.
 
 #### -p The proxies to check
 Proxy servers to check have to be in the well known form `protocol://hostname:port` the only execption is `DIRECT` which

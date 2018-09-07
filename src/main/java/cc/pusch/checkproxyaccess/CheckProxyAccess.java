@@ -26,7 +26,7 @@ class CheckProxyAccess {
             System.clearProperty(propertyToClear);
         }
         System.setProperty("java.net.useSystemProxies", "false");
-        String hostPort2Check;
+        String inputLine2Check;
         TrustManager[] trustAll = new TrustManager[]{
                 new X509TrustManager() {
                     @Override
@@ -60,11 +60,11 @@ class CheckProxyAccess {
         Results results = new Results(config.getConsoleOutput());
         try {
             BufferedReader urlsFile = new BufferedReader(new FileReader(config.getInfile()));
-            while ((hostPort2Check = urlsFile.readLine()) != null) {
+            while ((inputLine2Check = urlsFile.readLine()) != null) {
                 try {
-                    startCheckThread(SquidLog2Url.hostPort2Url(hostPort2Check), tPool, config, results);
+                    startCheckThread(InputLine2URL(inputLine2Check), tPool, config, results);
                 } catch (MalformedURLException ex) {
-                    System.out.println("Could not parse " + hostPort2Check);
+                    System.out.println("Could not parse " + inputLine2Check);
                 }
             }
         } catch (FileNotFoundException ex) {
@@ -97,6 +97,27 @@ class CheckProxyAccess {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ignored) {
+            }
+        }
+    }
+
+    private static URL InputLine2URL(String inputLine) throws MalformedURLException {
+        if (inputLine.matches("^(https?|ftp)://.*")) {
+            return new URL(inputLine);
+        } else {
+            String[] hostPortSplit = inputLine.split(":", 2);
+            String protocol;
+            int port;
+            if (hostPortSplit.length == 2) {
+                port = Integer.parseUnsignedInt(hostPortSplit[1]);
+                if (port == 443 || port == 8443) {
+                    protocol = "https";
+                } else {
+                    protocol = "http";
+                }
+                return new URL(protocol, hostPortSplit[0], port, "");
+            } else {
+                return new URL("http", hostPortSplit[0], "");
             }
         }
     }
